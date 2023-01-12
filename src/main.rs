@@ -5,7 +5,7 @@ fn main() {
     match args[1].as_str() {
         "-p" => {
             let mut handles = Vec::new();
-            for i in 0..10 {
+            for _i in 0..10 {
                 let h = std::thread::spawn(move || loop {
                     let context = zmq::Context::new();
                     let p = context.socket(zmq::PUB).unwrap();
