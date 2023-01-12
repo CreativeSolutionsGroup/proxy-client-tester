@@ -11,7 +11,7 @@ fn main() {
                     let p = context.socket(zmq::PUB).unwrap();
                     p.connect("tcp://localhost:9950").unwrap();
                     println!("sending");
-                    p.send(format!("data Hello world! {}", i).as_bytes(), 0)
+                    p.send(format!("heartbeat 00:00:00:00:00:00").as_bytes(), 0)
                         .unwrap();
                     std::thread::sleep(std::time::Duration::from_millis(1000));
                 });
@@ -26,7 +26,7 @@ fn main() {
             let context = zmq::Context::new();
             let sub = context.socket(zmq::SUB).unwrap();
             sub.connect("tcp://localhost:9951").unwrap();
-            sub.set_subscribe("data".as_bytes()).unwrap();
+            sub.set_subscribe("heartbeat".as_bytes()).unwrap();
             let mut msg = zmq::Message::new();
             loop {
                 println!("waiting for message...");
