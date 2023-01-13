@@ -8,7 +8,7 @@ fn main() {
             for _i in 0..10 {
                 let h = std::thread::spawn(move || loop {
                     let context = zmq::Context::new();
-                    let p = context.socket(zmq::PUB).unwrap();
+                    let p = context.socket(zmq::REQ).unwrap();
                     p.connect("tcp://localhost:9950").unwrap();
                     println!("sending");
                     p.send(format!("heartbeat 00:00:00:00:00:00").as_bytes(), 0)
@@ -24,14 +24,14 @@ fn main() {
         }
         "-s" => {
             let context = zmq::Context::new();
-            let sub = context.socket(zmq::SUB).unwrap();
-            sub.connect("tcp://localhost:9951").unwrap();
-            sub.set_subscribe("heartbeat".as_bytes()).unwrap();
+            let sub = context.socket(zmq::REP).unwrap();
+            sub.connect("tcp://localhost:9950").unwrap();
             let mut msg = zmq::Message::new();
             loop {
                 println!("waiting for message...");
                 sub.recv(&mut msg, 0).unwrap();
                 dbg!(msg.as_str().unwrap());
+                sub.send("ACK".as_bytes(), 0).unwrap();
             }
         }
         _ => unreachable!(),
