@@ -1,3 +1,5 @@
+use chrono::{self, Local};
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
@@ -32,6 +34,24 @@ fn main() {
                 sub.recv(&mut msg, 0).unwrap();
                 dbg!(msg.as_str().unwrap());
                 sub.send("ACK".as_bytes(), 0).unwrap();
+            }
+        }
+        "-l" => {
+            let context = zmq::Context::new();
+            let sub = context.socket(zmq::PAIR).unwrap();
+            sub.connect("tcp://localhost:9952").unwrap();
+            let mut msg = zmq::Message::new();
+            println!("waiting to log messages...");
+            loop {
+                sub.recv(&mut msg, 0).unwrap();
+                match msg.as_str() {
+                    Some(m) => {
+                        if !m.trim().is_empty() {
+                            println!("{}: {}", Local::now().format("%Y-%m-%d %H:%M:%S").to_string(), m);
+                        } 
+                    },
+                    None => (),
+                }
             }
         }
         _ => unreachable!(),
