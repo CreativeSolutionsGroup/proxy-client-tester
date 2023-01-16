@@ -11,7 +11,7 @@ fn main() {
                 let h = std::thread::spawn(move || loop {
                     let context = zmq::Context::new();
                     let p = context.socket(zmq::REQ).unwrap();
-                    p.connect("tcp://localhost:9950").unwrap();
+                    p.connect("tcp://proxy.cusmartevents.com:9951").unwrap();
                     println!("sending");
                     p.send(format!("heartbeat 00:00:00:00:00:00").as_bytes(), 0)
                         .unwrap();
@@ -27,7 +27,7 @@ fn main() {
         "-s" => {
             let context = zmq::Context::new();
             let sub = context.socket(zmq::REP).unwrap();
-            sub.connect("tcp://localhost:9950").unwrap();
+            sub.connect("tcp://proxy.cusmartevents.com:9950").unwrap();
             let mut msg = zmq::Message::new();
             loop {
                 println!("waiting for message...");
@@ -39,7 +39,7 @@ fn main() {
         "-l" => {
             let context = zmq::Context::new();
             let sub = context.socket(zmq::PAIR).unwrap();
-            sub.connect("tcp://localhost:9952").unwrap();
+            sub.connect("tcp://proxy.cusmartevents.com:9952").unwrap();
             let mut msg = zmq::Message::new();
             println!("waiting to log messages...");
             loop {
