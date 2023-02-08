@@ -35,7 +35,11 @@ fn main() {
                 match msg.as_str() {
                     Some(m) => {
                         dbg!(msg.as_str().unwrap());
-                        sub.send(format!("ACK {}", &m[10..]).as_bytes(), 0).unwrap();
+                        if m.contains("heartbeat") {
+                            sub.send(format!("ACK {}", &m[10..]).as_bytes(), 0).unwrap();
+                        } else {
+                            sub.send(format!("ACK {}", &m[8..]).as_bytes(), 0).unwrap();
+                        }
                     }
                     None => {
                         dbg!("recieved None");
